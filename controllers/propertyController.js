@@ -80,4 +80,35 @@ const deleteProperty = async(request, response) => {
         response.status(200).send({message: error.message})
     }
 }
-module.exports = {addProperty, getMyProperties, updateProperty, deleteProperty}
+//Buyer
+const getAllProperties = async(request, response) => {
+    const userData = request.user
+    try{
+        if(userData.role === "buyer"){
+            const properties = await propertyModel.find()
+            return response.status(200).send(properties)
+        }
+        else{
+            return response.status(401).send({message: "Not an authorized Buyer"})
+        }
+    }
+    catch(error){
+        response.status(200).send({message: error.message})
+    }
+}
+
+//Buyer
+const filterProperty = async(request, response) => {
+    const userData = request.user
+    const filterData = request.body
+    try{
+        const filteredProperties = await propertyModel.find(
+            {$match: {bedrooms: filterData.bedrooms, bathrooms: filterData.bathrooms}}
+        )
+        return response.status(200).send(filteredProperties)
+    }
+    catch(error){
+        response.status(200).send({message: error.message})
+    }
+}
+module.exports = {addProperty, getMyProperties, updateProperty, deleteProperty, getAllProperties, filterProperty}
